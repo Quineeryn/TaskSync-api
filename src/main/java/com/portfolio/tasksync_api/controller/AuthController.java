@@ -2,11 +2,13 @@ package com.portfolio.tasksync_api.controller;
 
 import com.portfolio.tasksync_api.dto.ApiResponse;
 import com.portfolio.tasksync_api.dto.AuthResponse;
+import com.portfolio.tasksync_api.dto.LoginRequest;
 import com.portfolio.tasksync_api.dto.RegisterRequest;
 import com.portfolio.tasksync_api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,17 +24,32 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        // 1. Panggil service, yang sekarang mengembalikan AuthResponse
         AuthResponse authResponse = authService.register(request);
 
-        // 2. Buat ApiResponse yang akan menjadi body dari respons
         ApiResponse<AuthResponse> apiResponse = ApiResponse.<AuthResponse>builder()
                 .status("success")
                 .data(authResponse)
                 .message("User registered successfully")
                 .build();
 
-        // 3. Kembalikan ResponseEntity dengan status 201 CREATED
-        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        // Menggunakan builder pattern untuk membuat respons yang lengkap
+        return ResponseEntity
+                .status(HttpStatus.CREATED) // Set status 201 Created
+                .contentType(MediaType.APPLICATION_JSON) // Set header Content-Type
+                .body(apiResponse); // Set body
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse authResponse = authService.login(request);
+
+        ApiResponse<AuthResponse> apiResponse = ApiResponse.<AuthResponse>builder()
+                .status("success")
+                .data(authResponse)
+                .message("Login successful")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
 }

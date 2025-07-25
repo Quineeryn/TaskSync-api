@@ -40,6 +40,12 @@ public class User implements UserDetails { // Implement UserDetails
     }
 
     @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
